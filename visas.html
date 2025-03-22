@@ -390,152 +390,154 @@
    </section>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script>
-     let visaData = []; // Store visa data globally
-
-// Load visa data on page load
-async function loadVisaData() {
-    try {
-        const response = await fetch('data.json'); // Ensure data.json is in the correct location
-        visaData = await response.json();
-        console.log("Visa Data Loaded:", visaData); // Debugging Log
-    } catch (error) {
-        console.error("Error loading visa data:", error);
-        alert("Failed to load visa data.");
-    }
-}
-
-// Load the data when the page loads
-loadVisaData();
-
-// Function to update Consulate dropdown based on Country selection
-function updateConsulates() {
-    const country = document.getElementById("country").value;
-    const consulateDropdown = document.getElementById("consulate");
-    const visaTypeDropdown = document.getElementById("visaType");
-
-    // Reset consulate options
-    consulateDropdown.innerHTML = `<option selected>Select Consulate</option>`;
-    visaTypeDropdown.innerHTML = `<option selected>Select Visa Type</option>`; // Reset visa type
-    visaTypeDropdown.disabled = true; // Disable visa type dropdown until consulate is selected
-
-    if (!visaData.requirements) {
-        console.error("Visa data is empty or incorrectly structured.");
-        return;
-    }
-
-    // Filter consulates for the selected country
-    const availableConsulates = [...new Set(visaData.requirements
-        .filter(entry => entry.country.toUpperCase() === country.toUpperCase())
-        .map(entry => entry.consulate)
-    )];
-
-    console.log("Available Consulates:", availableConsulates); // Debugging Log
-
-    // Populate consulate dropdown
-    availableConsulates.forEach(consulate => {
-        const option = document.createElement("option");
-        option.value = consulate;
-        option.textContent = consulate;
-        consulateDropdown.appendChild(option);
-    });
-
-    consulateDropdown.disabled = availableConsulates.length === 0; // Disable if no consulates found
-}
-
-// Function to update Visa Type dropdown based on Consulate selection
-function updateVisaTypes() {
-    const country = document.getElementById("country").value;
-    const consulate = document.getElementById("consulate").value;
-    const visaTypeDropdown = document.getElementById("visaType");
-
-    // Reset visa type options
-    visaTypeDropdown.innerHTML = `<option selected>Select Visa Type</option>`;
-
-    if (!visaData.requirements) {
-        console.error("Visa data is empty or incorrectly structured.");
-        return;
-    }
-
-    // Filter visa types for the selected country & consulate
-    const availableVisaTypes = [...new Set(visaData.requirements
-        .filter(entry => 
-            entry.country.toUpperCase() === country.toUpperCase() && 
-            entry.consulate.toUpperCase() === consulate.toUpperCase()
-        )
-        .map(entry => entry.visaType)
-    )];
-
-    console.log("Available Visa Types:", availableVisaTypes); // Debugging Log
-
-    // Populate visa type dropdown
-    availableVisaTypes.forEach(visaType => {
-        const option = document.createElement("option");
-        option.value = visaType;
-        option.textContent = visaType;
-        visaTypeDropdown.appendChild(option);
-    });
-
-    visaTypeDropdown.disabled = availableVisaTypes.length === 0; // Disable if no visa types found
-}
-
-// Display visa requirements based on user selection
-async function test(event) {
-    event.preventDefault(); // Prevent page reload
-
-    const country = document.getElementById("country").value;
-    const consulate = document.getElementById("consulate").value;
-    const visaType = document.getElementById("visaType").value;
-
-    if (country === "Select Country" || consulate === "Select Consulate" || visaType === "Select Visa Type") {
-        alert("Please make all selections.");
-        return;
-    }
-
-    console.log("Searching for:", country, consulate, visaType); // Debugging Log
-
-    // Find the matching entry in the JSON data
-    const result = visaData.requirements.find(req => 
-        req.country.toUpperCase() === country.toUpperCase() && 
-        req.consulate.toUpperCase() === consulate.toUpperCase() && 
-        req.visaType.toUpperCase() === visaType.toUpperCase()
-    );
-
-    console.log("Matching Result:", result); // Debugging Log
-
-    // Reference to elements
-    const requirementsHeader = document.getElementById("requirementsHeader");
-    const requirementsList = document.getElementById("requirementsList");
-    const resultSection = document.querySelector(".requremnts-box-1");
-
-    // Clear previous content
-    requirementsHeader.textContent = "";
-    requirementsList.innerHTML = "";
-
-    if (result) {
-        // Update header
-        requirementsHeader.textContent = `${visaType.toUpperCase()} VISA Requirements for ${country.toUpperCase()}`;
-
-        // Populate list
-        result.data.requirements.forEach(req => {
-            const li = document.createElement("li");
-            li.textContent = req;
-            requirementsList.appendChild(li);
-        });
-
-        // Make sure the result section is visible
-        resultSection.style.display = "block";
-        resultSection.style.visibility = "visible";
-    } else {
-        alert("No data found for the selected options.");
-    }
-}
-
-// Attach event listeners
-document.getElementById("country").addEventListener("change", updateConsulates);
-document.getElementById("consulate").addEventListener("change", updateVisaTypes);
-document.querySelector("form").addEventListener("submit", test);
-</script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+   <script>
+       let visaData = []; // Store visa data globally
+   
+       // Load visa data on page load
+       async function loadVisaData() {
+           try {
+               const response = await fetch('output.json'); // Changed from data.json to output.json
+               visaData = await response.json();
+               console.log("Visa Data Loaded:", visaData); // Debugging Log
+           } catch (error) {
+               console.error("Error loading visa data:", error);
+               alert("Failed to load visa data.");
+           }
+       }
+   
+       // Load the data when the page loads
+       loadVisaData();
+   
+       // Function to update Consulate dropdown based on Country selection
+       function updateConsulates() {
+           const country = document.getElementById("country").value;
+           const consulateDropdown = document.getElementById("consulate");
+           const visaTypeDropdown = document.getElementById("visaType");
+   
+           // Reset consulate options
+           consulateDropdown.innerHTML = `<option selected>Select Consulate</option>`;
+           visaTypeDropdown.innerHTML = `<option selected>Select Visa Type</option>`; // Reset visa type
+           visaTypeDropdown.disabled = true; // Disable visa type dropdown until consulate is selected
+   
+           if (!visaData.length) {
+               console.error("Visa data is empty or incorrectly structured.");
+               return;
+           }
+   
+           // Filter consulates for the selected country
+           const availableConsulates = [...new Set(visaData
+               .filter(entry => entry.Country.toUpperCase() === country.toUpperCase())
+               .map(entry => entry.Consulate)
+           )];
+   
+           console.log("Available Consulates:", availableConsulates); // Debugging Log
+   
+           // Populate consulate dropdown
+           availableConsulates.forEach(consulate => {
+               const option = document.createElement("option");
+               option.value = consulate;
+               option.textContent = consulate;
+               consulateDropdown.appendChild(option);
+           });
+   
+           consulateDropdown.disabled = availableConsulates.length === 0; // Disable if no consulates found
+       }
+   
+       // Function to update Visa Type dropdown based on Consulate selection
+       function updateVisaTypes() {
+           const country = document.getElementById("country").value;
+           const consulate = document.getElementById("consulate").value;
+           const visaTypeDropdown = document.getElementById("visaType");
+   
+           // Reset visa type options
+           visaTypeDropdown.innerHTML = `<option selected>Select Visa Type</option>`;
+   
+           if (!visaData.length) {
+               console.error("Visa data is empty or incorrectly structured.");
+               return;
+           }
+   
+           // Filter visa types for the selected country & consulate
+           const availableVisaTypes = [...new Set(visaData
+               .filter(entry => 
+                   entry.Country.toUpperCase() === country.toUpperCase() && 
+                   entry.Consulate.toUpperCase() === consulate.toUpperCase()
+               )
+               .map(entry => entry["Visa type"])
+           )];
+   
+           console.log("Available Visa Types:", availableVisaTypes); // Debugging Log
+   
+           // Populate visa type dropdown
+           availableVisaTypes.forEach(visaType => {
+               const option = document.createElement("option");
+               option.value = visaType;
+               option.textContent = visaType;
+               visaTypeDropdown.appendChild(option);
+           });
+   
+           visaTypeDropdown.disabled = availableVisaTypes.length === 0; // Disable if no visa types found
+       }
+   
+       // Display visa requirements based on user selection
+       async function test(event) {
+           event.preventDefault(); // Prevent page reload
+   
+           const country = document.getElementById("country").value;
+           const consulate = document.getElementById("consulate").value;
+           const visaType = document.getElementById("visaType").value;
+   
+           if (country === "Select Country" || consulate === "Select Consulate" || visaType === "Select Visa Type") {
+               alert("Please make all selections.");
+               return;
+           }
+   
+           console.log("Searching for:", country, consulate, visaType); // Debugging Log
+   
+           // Find the matching entry in the JSON data
+           const result = visaData.find(req => 
+               req.Country.toUpperCase() === country.toUpperCase() && 
+               req.Consulate.toUpperCase() === consulate.toUpperCase() && 
+               req["Visa type"].toUpperCase() === visaType.toUpperCase()
+           );
+   
+           console.log("Matching Result:", result); // Debugging Log
+   
+           // Reference to elements
+           const requirementsHeader = document.getElementById("requirementsHeader");
+           const requirementsList = document.getElementById("requirementsList");
+           const resultSection = document.querySelector(".requremnts-box-1");
+   
+           // Clear previous content
+           requirementsHeader.textContent = "";
+           requirementsList.innerHTML = "";
+   
+           if (result) {
+               // Update header
+               requirementsHeader.textContent = `${visaType.toUpperCase()} VISA Requirements for ${country.toUpperCase()}`;
+   
+               // Populate list
+               const requirementsArray = result["Value/Details"].split(/(?<=\.)\s+(?=[A-Z])/); // Split text into an array of points
+               requirementsArray.forEach(req => {
+                   const li = document.createElement("li");
+                   li.textContent = req.trim();
+                   requirementsList.appendChild(li);
+               });
+   
+               // Make sure the result section is visible
+               resultSection.style.display = "block";
+               resultSection.style.visibility = "visible";
+           } else {
+               alert("No data found for the selected options.");
+           }
+       }
+   
+       // Attach event listeners
+       document.getElementById("country").addEventListener("change", updateConsulates);
+       document.getElementById("consulate").addEventListener("change", updateVisaTypes);
+       document.querySelector("form").addEventListener("submit", test);
+   </script>
+   
 </body>
 </html>
